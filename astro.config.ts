@@ -34,7 +34,7 @@ export default defineConfig({
     tailwind(),
     sitemap(),
     workerLinks({
-      domain: "https://ovy.rs",
+      domain: "https://site.prismbot.icu",
       secret: process.env.WORKER_LINKS_SECRET!,
       getPageMapping(pages) {
         return pages
@@ -55,7 +55,7 @@ export default defineConfig({
   prefetch: {
     prefetchAll: true,
   },
-  site: "https://ovyerus.com",
+  site: "https://site.prismbot.icu",
   markdown: {
     remarkPlugins: [remarkFigureCaption, a11yEmoji],
     rehypePlugins: [

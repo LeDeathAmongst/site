@@ -7,7 +7,7 @@ const posts = sortPosts(await getCollection("posts"));
 
 export const GET = () =>
   rss({
-    title: "Ovyerus' posts",
+    title: "Rosie's posts",
     description:
       "A stream of my consciousness shouted into the ether. Sometimes big posts, sometimes small posts. Depends on how I'm feeling when I write whatever.",
     site: import.meta.env.SITE,

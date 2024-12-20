@@ -1,30 +1,13 @@
-# All root domains owned (on a registry level) by Ashlynne M (ovyerus.com)
+# All root domains owned (on a registry level) by Rosie V.
 # Domains that redirect to domains not in this list may not be in complete control.
 # Content outside of these domains cannot be guarenteed to be owned or managed by Ashlynne.
 
 # Last updated: 2023-01-04T23:18:19.488Z
 
 # You are here
-ovyerus.com
-ovyerus.com.au
-ovyerus.au
+site.prismbot.icu
 
 # CDN/fileshare.
-ovy.cloud
-
+# And
 # Link shortener
-ovy.rs
-
-# Hosted/internal services
-ovy.sh
-
-# Miscellaneous apps
-prismaliser.app
-
-# Handed off to friend
-erisa.au
-
-# Unused
-ovy.au
-aleph.chat
-comet.sh
+cdn.prismbot.icu
