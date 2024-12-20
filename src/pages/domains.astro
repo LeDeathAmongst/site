@@ -1,6 +1,7 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import DomainCard from "../components/DomainCard.astro";
+import ArticleIndex from "../components/ArticleIndex.astro"; // Importing the ArticleIndex component
 
 const domains = [
   {
@@ -23,6 +24,7 @@ const domains = [
     title="Domains"
     navCurrent="/domains"
   >
+    <!-- Using the slot named 'description' for the explanatory text -->
     <Fragment slot="description">
       All root domains owned (on a registry level) by Rosie V.
       Domains that redirect to domains not in this list may not be in complete control.
@@ -30,6 +32,7 @@ const domains = [
       Last updated: 2024-12-20 4:45PM EST
     </Fragment>
 
+    <!-- Mapping over the domains array to display each domain using the DomainCard component -->
     {
       domains.map(({ domain, description }) => (
         <DomainCard domain={domain} description={description} />
