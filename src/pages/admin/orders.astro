@@ -1,0 +1,54 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { useEffect, useState } from "react";
+
+const [orders, setOrders] = useState([]);
+
+useEffect(() => {
+  fetch('/admin/orders')
+    .then(response => response.json())
+    .then(data => setOrders(data));
+}, []);
+---
+
+<Layout title="Admin Orders - Rosie" description="View submitted orders.">
+  <h1>Submitted Orders</h1>
+
+  <section class="order-list">
+    {orders.map(order => (
+      <article class="order-card">
+        <h2>{order.name}</h2>
+        <p>Email: {order.email}</p>
+        <p>Description: {order.description}</p>
+        <p>Price: ${order.price}</p>
+        <p>Payment Method: {order.paymentMethod}</p>
+        <p>Submitted At: {new Date(order.submittedAt).toLocaleString()}</p>
+      </article>
+    ))}
+  </section>
+</Layout>
+
+<style>
+  .order-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+  }
+
+  .order-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    width: calc(33% - 2rem);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+
+  .order-card h2 {
+    margin: 0;
+    font-size: 1.5rem;
+  }
+
+  .order-card p {
+    margin: 0.5rem 0;
+  }
+</style>
