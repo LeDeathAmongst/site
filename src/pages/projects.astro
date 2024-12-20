@@ -1,0 +1,42 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ProjectCard from "../components/ProjectCard.astro";
+import ArticleIndex from "../components/ArticleIndex.astro"; // Importing the ArticleIndex component
+
+const projects = [
+  {
+    title: "Project One",
+    description: "Description for project one.",
+    image: "/images/project-one.jpg",
+    link: "https://example.com/project-one",
+  },
+  {
+    title: "Project Two",
+    description: "Description for project two.",
+    image: "/images/project-two.jpg",
+    link: "https://example.com/project-two",
+  },
+  // Add more projects as needed
+];
+---
+
+<Layout
+  title="Projects - Rosie"
+  ogTitle="Projects"
+  description="List of projects by Rosie."
+>
+  <ArticleIndex
+    title="Projects"
+    navCurrent="/projects"
+  >
+    <Fragment slot="description">
+      Here are some of the projects I have worked on. Click on the cards to learn more about each project.
+    </Fragment>
+
+    {
+      projects.map(({ title, description, image, link }) => (
+        <ProjectCard title={title} description={description} image={image} link={link} />
+      ))
+    }
+  </ArticleIndex>
+</Layout>
