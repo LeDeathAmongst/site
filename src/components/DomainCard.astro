@@ -1,8 +1,58 @@
+---
 interface Props {
-domain: string;
-description: string;
+  domain: string;
+  description: string;
 }
 
-const { domain, description } = Astro.props;
-{domain}
-{description}
+const { domain, description } = Astro.props as Props;
+---
+
+<article class="post">
+  <a class="flex flex-col gap-2 p-5" href={`https://${domain}`} target="_blank" rel="noopener noreferrer">
+    <h2 class="text-2xl font-bold">{domain}</h2>
+    <p class="text-lg opacity-75">{description}</p>
+  </a>
+</article>
+
+<style>
+  @property --bg1 {
+    syntax: "<color>";
+    initial-value: #101416;
+    inherits: false;
+  }
+
+  @property --bg2 {
+    syntax: "<color>";
+    initial-value: #101416;
+    inherits: false;
+  }
+
+  .post {
+    @apply rounded-lg;
+    position: relative;
+    background: linear-gradient(to bottom right, var(--bg1), var(--bg2));
+    color: white;
+    transition:
+      --bg1 0.1s ease-out,
+      --bg2 0.1s ease-out;
+
+    &:hover {
+      --bg1: #f0f;
+      --bg2: #0ff;
+    }
+
+    &::before {
+      content: "";
+      display: block;
+      position: absolute;
+      inset: 1px;
+      background: #101416;
+      border-radius: inherit;
+      pointer-events: none;
+    }
+
+    & * {
+      z-index: 5;
+    }
+  }
+</style>
