@@ -1,0 +1,62 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title="Order Form - Rosie" description="Submit your order here.">
+  <h1>Order Form</h1>
+  
+  <form action="/submit-order" method="post" class="order-form">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required />
+  
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required />
+  
+    <label for="description">Description:</label>
+    <textarea id="description" name="description" required></textarea>
+  
+    <label for="price">Price:</label>
+    <input type="number" id="price" name="price" required />
+  
+    <label for="payment-method">Method of Payment:</label>
+    <select id="payment-method" name="paymentMethod" required>
+      <option value="credit-card">Credit Card</option>
+      <option value="paypal">PayPal</option>
+      <option value="bank-transfer">Bank Transfer</option>
+    </select>
+  
+    <button type="submit">Submit Order</button>
+  </form>
+</Layout>
+
+<style>
+  .order-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .order-form label {
+    font-weight: bold;
+  }
+
+  .order-form input,
+  .order-form textarea,
+  .order-form select {
+    width: 100%;
+    padding: 0.5rem;
+  }
+
+  .order-form button {
+    width: fit-content;
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+
+  .order-form button:hover {
+    background-color: #0056b3;
+  }
+</style>
