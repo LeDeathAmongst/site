@@ -1,31 +1,69 @@
 ---
 import Layout from "../../layouts/Layout.astro";
-import { useEffect, useState } from "react";
+import { onMount, useState } from "solid-js";
 
 const [orders, setOrders] = useState([]);
+const [pin, setPin] = useState("");
+const [error, setError] = useState("");
 
-useEffect(() => {
-  fetch('/admin/orders')
-    .then(response => response.json())
-    .then(data => setOrders(data));
-}, []);
+onMount(() => {
+  if (pin) {
+    fetch(`/admin/orders?pin=${pin}`)
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Incorrect PIN');
+        }
+        return response.json();
+      })
+      .then(data => setOrders(data))
+      .catch(err => setError(err.message));
+  }
+});
+
+const handlePinSubmit = (event) => {
+  event.preventDefault();
+  fetch(`/admin/orders?pin=${pin}`)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Incorrect PIN');
+      }
+      return response.json();
+    })
+    .then(data => {
+      setOrders(data);
+      setError("");
+    })
+    .catch(err => setError(err.message));
+};
 ---
 
 <Layout title="Admin Orders - Rosie" description="View submitted orders.">
   <h1>Submitted Orders</h1>
 
-  <section class="order-list">
-    {orders.map(order => (
-      <article class="order-card">
-        <h2>{order.name}</h2>
-        <p>Email: {order.email}</p>
-        <p>Description: {order.description}</p>
-        <p>Price: ${order.price}</p>
-        <p>Payment Method: {order.paymentMethod}</p>
-        <p>Submitted At: {new Date(order.submittedAt).toLocaleString()}</p>
-      </article>
-    ))}
-  </section>
+  {error && <p class="error">{error}</p>}
+
+  {!orders.length && (
+    <form onSubmit={handlePinSubmit} class="pin-form">
+      <label for="pin">Enter PIN:</label>
+      <input type="password" id="pin" value={pin} onInput={(e) => setPin(e.target.value)} required />
+      <button type="submit">Submit</button>
+    </form>
+  )}
+
+  {orders.length > 0 && (
+    <section class="order-list">
+      {orders.map(order => (
+        <article class="order-card">
+          <h2>{order.name}</h2>
+          <p>Email: {order.email}</p>
+          <p>Description: {order.description}</p>
+          <p>Price: ${order.price}</p>
+          <p>Payment Method: {order.paymentMethod}</p>
+          <p>Submitted At: {new Date(order.submittedAt).toLocaleString()}</p>
+        </article>
+      ))}
+    </section>
+  )}
 </Layout>
 
 <style>
@@ -50,5 +88,36 @@ useEffect(() => {
 
   .order-card p {
     margin: 0.5rem 0;
+  }
+
+  .pin-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .pin-form label {
+    font-weight: bold;
+  }
+
+  .pin-form input {
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .pin-form button {
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+
+  .pin-form button:hover {
+    background-color: #0056b3;
+  }
+
+  .error {
+    color: red;
   }
 </style>
