@@ -1,0 +1,40 @@
+---
+interface Order {
+  name: string;
+  email: string;
+  description: string;
+  price: number;
+  paymentMethod: string;
+  submittedAt: string;
+}
+
+const { order } = Astro.props as { order: Order };
+---
+
+<article class="order-card">
+  <h2>{order.name}</h2>
+  <p><strong>Email:</strong> {order.email}</p>
+  <p><strong>Description:</strong> {order.description}</p>
+  <p><strong>Price:</strong> ${order.price}</p>
+  <p><strong>Payment Method:</strong> {order.paymentMethod}</p>
+  <p><strong>Submitted At:</strong> {new Date(order.submittedAt).toLocaleString()}</p>
+</article>
+
+<style>
+  .order-card {
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    background-color: #f9f9f9;
+  }
+
+  .order-card h2 {
+    margin: 0;
+    font-size: 1.5rem;
+  }
+
+  .order-card p {
+    margin: 0.5rem 0;
+  }
+</style>
