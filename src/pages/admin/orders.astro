@@ -1,122 +1,52 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import { onMount, useState } from "solid-js";
+import Layout from "../layouts/Layout.astro";
+import OrderCard from "../components/OrderCard.astro";
+import { createSignal, onMount } from "solid-js";
 
-const [orders, setOrders] = useState([]);
-const [pin, setPin] = useState("");
-const [error, setError] = useState("");
+// Create signals for orders and errors
+const [orders, setOrders] = createSignal([]);
+const [error, setError] = createSignal("");
 
-onMount(() => {
-  if (pin) {
-    fetch(`/admin/orders?pin=${pin}`)
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Incorrect PIN');
-        }
-        return response.json();
-      })
-      .then(data => setOrders(data))
-      .catch(err => setError(err.message));
+// Fetch orders on mount
+onMount(async () => {
+  try {
+    const response = await fetch('/admin/orders?pin=1104');
+    if (!response.ok) {
+      throw new Error('Failed to fetch orders');
+    }
+    const data = await response.json();
+    setOrders(data);
+  } catch (err) {
+    setError(err.message);
   }
 });
-
-const handlePinSubmit = (event) => {
-  event.preventDefault();
-  fetch(`/admin/orders?pin=${pin}`)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error('Incorrect PIN');
-      }
-      return response.json();
-    })
-    .then(data => {
-      setOrders(data);
-      setError("");
-    })
-    .catch(err => setError(err.message));
-};
 ---
 
-<Layout title="Admin Orders - Rosie" description="View submitted orders.">
-  <h1>Submitted Orders</h1>
+<Layout
+  title="Orders - Rosie"
+  ogTitle="Orders"
+  description="Submitted orders from customers."
+>
+  <ArticleIndex title="Orders" navCurrent="/admin/orders">
+    <Fragment slot="description">
+      Here are the orders submitted by customers. You can view the details of each order below.
+    </Fragment>
 
-  {error && <p class="error">{error}</p>}
+    {error() && (
+      <p class="error">{error()}</p>
+    )}
 
-  {!orders.length && (
-    <form onSubmit={handlePinSubmit} class="pin-form">
-      <label for="pin">Enter PIN:</label>
-      <input type="password" id="pin" value={pin} onInput={(e) => setPin(e.target.value)} required />
-      <button type="submit">Submit</button>
-    </form>
-  )}
-
-  {orders.length > 0 && (
-    <section class="order-list">
-      {orders.map(order => (
-        <article class="order-card">
-          <h2>{order.name}</h2>
-          <p>Email: {order.email}</p>
-          <p>Description: {order.description}</p>
-          <p>Price: ${order.price}</p>
-          <p>Payment Method: {order.paymentMethod}</p>
-          <p>Submitted At: {new Date(order.submittedAt).toLocaleString()}</p>
-        </article>
-      ))}
-    </section>
-  )}
+    {orders().length > 0 ? (
+      orders().map(order => (
+        <OrderCard order={order} />
+      ))
+    ) : (
+      <p>No orders found.</p>
+    )}
+  </ArticleIndex>
 </Layout>
 
 <style>
-  .order-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-  }
-
-  .order-card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
-    padding: 1rem;
-    width: calc(33% - 2rem);
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-
-  .order-card h2 {
-    margin: 0;
-    font-size: 1.5rem;
-  }
-
-  .order-card p {
-    margin: 0.5rem 0;
-  }
-
-  .pin-form {
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-  }
-
-  .pin-form label {
-    font-weight: bold;
-  }
-
-  .pin-form input {
-    padding: 0.5rem;
-    font-size: 1rem;
-  }
-
-  .pin-form button {
-    padding: 0.5rem 1rem;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    cursor: pointer;
-  }
-
-  .pin-form button:hover {
-    background-color: #0056b3;
-  }
-
   .error {
     color: red;
   }
