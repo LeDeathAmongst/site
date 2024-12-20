@@ -32,6 +32,7 @@
     "astro-seo": "^0.8.4",
     "astro-worker-links": "^0.3.1",
     "date-fns": "^4.1.0",
+    "express": "^4.21.2",
     "markdown-it": "^14.1.0",
     "rehype-autolink-headings": "^7.1.0",
     "rehype-external-links": "^3.0.0",
