@@ -3,6 +3,7 @@ import "@fontsource/montserrat/400.css";
 import "@fontsource/montserrat/600.css";
 import "@fontsource/montserrat/700.css";
 import Head from "../components/Head.astro";
+import { SEO } from 'astro-seo';
 
 interface Props {
   description?: string;
@@ -12,6 +13,8 @@ interface Props {
 }
 
 const { description, title, ogTitle, ogImage } = Astro.props;
+const ogType = "website";
+const url = "https://yourdomain.com"; // Replace with your actual URL
 ---
 
 <!doctype html>
@@ -22,6 +25,17 @@ const { description, title, ogTitle, ogImage } = Astro.props;
   <body
     class="flex w-screen flex-grow flex-col bg-black text-xl italic text-white md:text-2xl"
   >
+    <SEO
+      title={title}
+      description={description}
+      url={url}
+      openGraph={{
+        title: ogTitle,
+        type: ogType,
+        image: ogImage,
+      }}
+    />
+
     <slot />
 
     <style is:global>
