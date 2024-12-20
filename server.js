@@ -33,8 +33,18 @@ app.post('/submit-order', (req, res) => {
   res.send('Order submitted successfully!');
 });
 
+// Middleware to check admin PIN
+const checkAdminPin = (req, res, next) => {
+  const pin = req.query.pin;
+  if (pin === '1104') {
+    next();
+  } else {
+    res.status(401).send('Unauthorized: Incorrect PIN');
+  }
+};
+
 // Route to display submitted orders (hidden admin page)
-app.get('/admin/orders', (req, res) => {
+app.get('/admin/orders', checkAdminPin, (req, res) => {
   const ordersFilePath = path.join(__dirname, 'orders.json');
   let orders = [];
 
