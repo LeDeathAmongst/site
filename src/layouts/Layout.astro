@@ -1,35 +1,29 @@
 ---
-import { SEO } from 'astro-seo';
+import "@fontsource/montserrat/400.css";
+import "@fontsource/montserrat/600.css";
+import "@fontsource/montserrat/700.css";
+import Head from "../components/Head.astro";
 
-// Extract props and provide default values
-const { title, description, ogTitle, ogImage, url } = Astro.props;
-const ogType = "website"; // Set a default type if not provided
+interface Props {
+  description?: string;
+  title: string;
+  ogTitle: string;
+  ogImage?: string;
+}
 
-// Ensure ogImage has a default value
-const defaultOgImage = "https://yourdomain.com/default-og-image.jpg"; // Replace with your default image URL
-
-// Ensure URL has a default value
-const defaultUrl = "https://yourdomain.com"; // Replace with your default URL
-
+const { description, title, ogTitle, ogImage } = Astro.props;
 ---
 
 <!doctype html>
 <html lang="en">
-  <head>
-    <SEO
-      title={title}
-      description={description}
-      url={url || defaultUrl} // Use defaultUrl if url is not provided
-      openGraph={{
-        title: ogTitle || title,
-        type: ogType,
-        image: ogImage || defaultOgImage, // Use defaultOgImage if ogImage is not provided
-      }}
-    />
+  <Head {description} {title} {ogTitle} {ogImage}>
     <slot name="head" />
-  </head>
-  <body>
+  </Head>
+  <body
+    class="flex w-screen flex-grow flex-col bg-black text-xl italic text-white md:text-2xl"
+  >
     <slot />
+
     <style is:global>
       html {
         min-height: 100%;
