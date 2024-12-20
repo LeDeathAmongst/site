@@ -1,0 +1,38 @@
+---
+interface OpenGraphProps {
+  title: string;
+  type: string;
+  image: string;
+  url: string;
+}
+
+interface SEOProps {
+  title: string;
+  description?: string;
+  url?: string;
+  openGraph?: OpenGraphProps;
+}
+
+const { title, description, url, openGraph } = Astro.props as SEOProps;
+
+if (openGraph && (!openGraph.title || !openGraph.type || !openGraph.image || !openGraph.url)) {
+  throw new Error("If you pass the openGraph prop, you have to at least define the title, type, image, and url basic properties!");
+}
+---
+
+<head>
+  <title>{title}</title>
+  {description && <meta name="description" content={description} />}
+  {url && <link rel="canonical" href={url} />}
+  {openGraph && (
+    <>
+      <meta property="og:title" content={openGraph.title} />
+      <meta property="og:type" content={openGraph.type} />
+      <meta property="og:image" content={openGraph.image} />
+      <meta property="og:url" content={openGraph.url} />
+      {description && <meta property="og:description" content={description} />}
+    </>
+  )}
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charSet="UTF-8" />
+</head>
