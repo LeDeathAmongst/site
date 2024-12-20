@@ -11,6 +11,7 @@ const { title, description, image, link } = Astro.props as Props;
 
 <article class="post">
   <a class="flex flex-col gap-2 p-5" href={link} target="_blank" rel="noopener noreferrer">
+    <!-- Use the image source for the GIF or any image type -->
     <img src={image} alt={title} class="w-full h-auto rounded-md" />
     <h2 class="text-2xl font-bold">{title}</h2>
     <p class="text-lg opacity-75">{description}</p>
