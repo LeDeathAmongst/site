@@ -1,0 +1,44 @@
+interface Props {
+domain: string;
+description: string;
+}
+
+const { domain, description } = Astro.props;
+{domain}
+{description}
+
+Code
+**2. Create a new Astro page for the domain list (`src/pages/domains.astro`):**
+```astro
+---
+import Layout from "../layouts/Layout.astro";
+import DomainCard from "../components/DomainCard.astro";
+
+const domains = [
+  {
+    domain: "site.prismbot.icu",
+    description: "You are here",
+  },
+  {
+    domain: "cdn.prismbot.icu",
+    description: "CDN/fileshare and Link shortener",
+  }
+];
+---
+
+<Layout
+  title="Domains - Rosie"
+  ogTitle="Domains"
+  description="List of domains owned by Rosie."
+>
+  <main class="content">
+    <h1>Domains</h1>
+    <p># All root domains owned (on a registry level) by Rosie V.</p>
+    <p># Domains that redirect to domains not in this list may not be in complete control.</p>
+    <p># Content outside of these domains cannot be guaranteed to be owned or managed by Ashlynne.</p>
+    <p># Last updated: 2024-12-20 4:45PM EST</p>
+    {domains.map(({ domain, description }) => (
+      <DomainCard domain={domain} description={description} />
+    ))}
+  </main>
+</Layout>
