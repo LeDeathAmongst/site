@@ -14,7 +14,7 @@ import {
 import wordmarkData from "~assets/wordmark-gradient.svg";
 
 const wordmark =
-  "data:image/svg+xml;base64," +
+  "data:image/svg" +
   Buffer.from(
     (wordmarkData as unknown as ImageMetadata & { contents: any }).contents,
   ).toString("base64");
