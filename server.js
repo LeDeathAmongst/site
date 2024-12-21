@@ -8,6 +8,8 @@ const PORT = 3000;
 const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1319827706887671919/SqeSEkI0L_Kqlk0mRgH5dZvKtXgkuaks0_B9r2-yJgTiEI4bkPEI-D98ZMBlarv5mt2t';
 
 const server = http.createServer((req, res) => {
+  console.log(`Received request: ${req.method} ${req.url}`);
+  
   if (req.method === 'POST' && req.url === '/submit-order') {
     let body = '';
 
@@ -18,50 +20,57 @@ const server = http.createServer((req, res) => {
 
     // Once all data is received, process the order submission
     req.on('end', () => {
-      const { name, email, description, price, paymentMethod } = parse(body);
-      const orderId = uuidv4(); // Generate a unique order ID
-      const submittedAt = new Date().toISOString(); // Record the submission time
+      try {
+        const { name, email, description, price, paymentMethod } = parse(body);
+        const orderId = uuidv4(); // Generate a unique order ID
+        const submittedAt = new Date().toISOString(); // Record the submission time
 
-      // Prepare the message to be sent to the Discord webhook
-      const webhookData = JSON.stringify({
-        content: `New Order Received!\n\n**Order ID:** ${orderId}\n**Name:** ${name}\n**Email:** ${email}\n**Description:** ${description}\n**Price:** $${price}\n**Payment Method:** ${paymentMethod}\n**Submitted At:** ${submittedAt}`
-      });
+        console.log(`Order received: ${orderId}`);
 
-      const webhookUrl = new URL(DISCORD_WEBHOOK_URL);
-      const webhookOptions = {
-        hostname: webhookUrl.hostname,
-        path: webhookUrl.pathname + webhookUrl.search,
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Content-Length': webhookData.length
-        }
-      };
-
-      // Send the webhook message to Discord
-      const webhookReq = https.request(webhookOptions, webhookRes => {
-        let webhookResponse = '';
-
-        webhookRes.on('data', chunk => {
-          webhookResponse += chunk;
+        // Prepare the message to be sent to the Discord webhook
+        const webhookData = JSON.stringify({
+          content: `New Order Received!\n\n**Order ID:** ${orderId}\n**Name:** ${name}\n**Email:** ${email}\n**Description:** ${description}\n**Price:** $${price}\n**Payment Method:** ${paymentMethod}\n**Submitted At:** ${submittedAt}`
         });
 
-        webhookRes.on('end', () => {
-          console.log('Webhook response:', webhookResponse);
-          res.statusCode = 302; // Redirect status code
-          res.setHeader('Location', `/order-confirmation?orderId=${orderId}`);
-          res.end();
-        });
-      });
+        const webhookUrl = new URL(DISCORD_WEBHOOK_URL);
+        const webhookOptions = {
+          hostname: webhookUrl.hostname,
+          path: webhookUrl.pathname + webhookUrl.search,
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Content-Length': Buffer.byteLength(webhookData)
+          }
+        };
 
-      webhookReq.on('error', e => {
-        console.error('Error sending webhook:', e);
+        // Send the webhook message to Discord
+        const webhookReq = https.request(webhookOptions, webhookRes => {
+          let webhookResponse = '';
+
+          webhookRes.on('data', chunk => {
+            webhookResponse += chunk;
+          });
+
+          webhookRes.on('end', () => {
+            console.log('Webhook response:', webhookResponse);
+            res.writeHead(302, { 'Location': `/order-confirmation?orderId=${orderId}` });
+            res.end();
+          });
+        });
+
+        webhookReq.on('error', e => {
+          console.error('Error sending webhook:', e);
+          res.statusCode = 500;
+          res.end('Error sending webhook');
+        });
+
+        webhookReq.write(webhookData); // Write the webhook data to the request
+        webhookReq.end();
+      } catch (error) {
+        console.error('Error processing order:', error);
         res.statusCode = 500;
-        res.end('Error sending webhook');
-      });
-
-      webhookReq.write(webhookData); // Write the webhook data to the request
-      webhookReq.end();
+        res.end('Error processing order');
+      }
     });
   } else if (req.method === 'GET' && req.url.startsWith('/order-confirmation')) {
     const urlParts = new URL(req.url, `http://${req.headers.host}`);
