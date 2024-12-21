@@ -6,8 +6,6 @@ const description = "Your order has been submitted successfully.";
 const ogTitle = "Order Confirmation - Rosie";
 const ogImage = "https://yourdomain.com/path/to/your/og-image.jpg"; // Replace with your actual image URL
 const url = "https://yourdomain.com/order-confirmation"; // Replace with your actual URL
-
-const orderId = new URL(window.location.href).searchParams.get("orderId");
 ---
 
 <Layout
@@ -20,10 +18,18 @@ const orderId = new URL(window.location.href).searchParams.get("orderId");
   <div class="confirmation-container">
     <h1>Order Confirmation</h1>
     <p>Thank you for your order! Your order has been submitted successfully. We will process it soon.</p>
-    <p class="order-number">Order Number: {orderId}</p>
+    <p class="order-number" id="order-number">Order Number: </p>
     <a href="https://site.prismbot.icu" class="home-link">Back to Home</a>
   </div>
 </Layout>
+
+<script>
+  // This script runs on the client side
+  document.addEventListener("DOMContentLoaded", () => {
+    const orderId = new URL(window.location.href).searchParams.get("orderId");
+    document.getElementById("order-number").textContent += orderId;
+  });
+</script>
 
 <style>
   .confirmation-container {
