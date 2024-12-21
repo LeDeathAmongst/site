@@ -1,8 +1,11 @@
 ---
 import Layout from "../layouts/Layout.astro";
 
+const { searchParams } = Astro.url;
+const orderId = searchParams.get('orderId');
+
 const title = "Order Confirmation - Rosie";
-const description = "Your order has been submitted successfully.";
+const description = "Order Confirmation Page";
 const ogTitle = "Order Confirmation - Rosie";
 ---
 
@@ -14,18 +17,10 @@ const ogTitle = "Order Confirmation - Rosie";
   <div class="confirmation-container">
     <h1>Order Confirmation</h1>
     <p>Thank you for your order! Your order has been submitted successfully. We will process it soon.</p>
-    <p class="order-number" id="order-number">Order Number: </p>
-    <a href="https://site.prismbot.icu" class="home-link">Back to Home</a>
+    <p class="order-number">Order Number: {orderId}</p>
+    <a href="/" class="home-link">Back to Home</a>
   </div>
 </Layout>
-
-<script>
-  // This script runs on the client side
-  document.addEventListener("DOMContentLoaded", () => {
-    const orderId = new URL(window.location.href).searchParams.get("orderId");
-    document.getElementById("order-number").textContent += orderId;
-  });
-</script>
 
 <style>
   .confirmation-container {
@@ -42,23 +37,19 @@ const ogTitle = "Order Confirmation - Rosie";
     max-width: 600px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
-
   .confirmation-container h1 {
     font-size: 2.5rem;
     margin-bottom: 1rem;
   }
-
   .confirmation-container p {
     font-size: 1.2rem;
     margin-bottom: 1rem;
   }
-
   .order-number {
     font-weight: bold;
     font-size: 1.5rem;
     margin-bottom: 2rem;
   }
-
   .home-link {
     display: inline-block;
     padding: 0.75rem 1.5rem;
@@ -68,7 +59,6 @@ const ogTitle = "Order Confirmation - Rosie";
     text-decoration: none;
     transition: background-color 0.3s ease;
   }
-
   .home-link:hover {
     background-color: #0056b3;
   }
