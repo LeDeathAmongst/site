@@ -1,9 +1,10 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import OrderCard from "../../components/OrderCard.astro";
+import { getCollection } from "astro:content"; // Ensure this import is correct
+import Layout from "../layouts/Layout.astro";
+import OrderCard from "../components/OrderCard.astro";
 import { createSignal, onMount } from "solid-js";
 
-// Fetch orders (replace this with your actual orders fetching logic)
+// Fetch orders
 const orders = await getCollection("orders");
 
 // Create signals for PIN, search, and authentication status
