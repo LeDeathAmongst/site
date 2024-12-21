@@ -1,70 +1,44 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+const express = require('express');
+const fs = require('fs');
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
 
 const app = express();
-const port = 3000;
+app.use(express.urlencoded({ extended: true }));
 
-// Get __dirname in ES module
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-// Middleware to parse form data
-app.use(bodyParser.urlencoded({ extended: true }));
-
-// Route to handle form submission
 app.post('/submit-order', (req, res) => {
-  const order = {
-    name: req.body.name,
-    email: req.body.email,
-    description: req.body.description,
-    price: req.body.price,
-    paymentMethod: req.body.paymentMethod,
-    submittedAt: new Date().toISOString()
-  };
+  const { name, email, description, price, paymentMethod } = req.body;
+  const orderId = uuidv4();
+  const submittedAt = new Date().toISOString();
 
-  // Save the order to a file (or a database in a real application)
-  const ordersFilePath = path.join(__dirname, 'orders.json');
-  let orders = [];
+  const orderContent = `---
+id: "${orderId}"
+name: "${name}"
+email: "${email}"
+description: "${description}"
+price: ${price}
+paymentMethod: "${paymentMethod}"
+submittedAt: "${submittedAt}"
+---
 
-  if (fs.existsSync(ordersFilePath)) {
-    orders = JSON.parse(fs.readFileSync(ordersFilePath));
-  }
+Order details:
+- Name: ${name}
+- Email: ${email}
+- Description: ${description}
+- Price: ${price}
+- Payment Method: ${paymentMethod}
+`;
 
-  orders.push(order);
-  fs.writeFileSync(ordersFilePath, JSON.stringify(orders, null, 2));
-
-  res.send('Order submitted successfully!');
+  const orderFilePath = path.join(__dirname, 'src/content/orders', `${orderId}.md`);
+  fs.writeFile(orderFilePath, orderContent, (err) => {
+    if (err) {
+      console.error('Error saving order:', err);
+      return res.status(500).send('Error saving order');
+    }
+    res.redirect('/order-confirmation');
+  });
 });
 
-// Middleware to check admin PIN
-const checkAdminPin = (req, res, next) => {
-  const pin = req.query.pin;
-  if (pin === '1104') {
-    next();
-  } else {
-    res.status(401).send('Unauthorized: Incorrect PIN');
-  }
-};
-
-// Route to display submitted orders (hidden admin page)
-app.get('/admin/orders', checkAdminPin, (req, res) => {
-  const ordersFilePath = path.join(__dirname, 'orders.json');
-  let orders = [];
-
-  if (fs.existsSync(ordersFilePath)) {
-    orders = JSON.parse(fs.readFileSync(ordersFilePath));
-  }
-
-  res.json(orders);
-});
-
-// Serve the Astro built files
-app.use(express.static(path.join(__dirname, 'dist')));
-
-app.listen(port, () => {
-  console.log(`Server running at http://localhost:${port}`);
+app.listen(3000, () => {
+  console.log('Server is running on http://localhost:3000');
 });
