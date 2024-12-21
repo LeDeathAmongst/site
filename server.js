@@ -4,22 +4,24 @@ const { v4: uuidv4 } = require('uuid');
 const querystring = require('querystring');
 
 const PORT = 3000;
-const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN'; // Replace with your actual webhook URL
+const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1319827706887671919/SqeSEkI0L_Kqlk0mRgH5dZvKtXgkuaks0_B9r2-yJgTiEI4bkPEI-D98ZMBlarv5mt2t'; // Replace with your actual webhook URL
 
 const server = http.createServer((req, res) => {
   if (req.method === 'POST' && req.url === '/submit-order') {
     let body = '';
 
+    // Accumulate the data chunks received in the request body
     req.on('data', chunk => {
       body += chunk.toString();
     });
 
+    // Once all data is received, process the order submission
     req.on('end', () => {
       const { name, email, description, price, paymentMethod } = querystring.parse(body);
-      const orderId = uuidv4();
-      const submittedAt = new Date().toISOString();
+      const orderId = uuidv4(); // Generate a unique order ID
+      const submittedAt = new Date().toISOString(); // Record the submission time
 
-      // Send order details to Discord webhook
+      // Prepare the message to be sent to the Discord webhook
       const webhookData = JSON.stringify({
         content: `New Order Received!\n\n**Order ID:** ${orderId}\n**Name:** ${name}\n**Email:** ${email}\n**Description:** ${description}\n**Price:** $${price}\n**Payment Method:** ${paymentMethod}\n**Submitted At:** ${submittedAt}`
       });
@@ -35,6 +37,7 @@ const server = http.createServer((req, res) => {
         }
       };
 
+      // Send the webhook message to Discord
       const webhookReq = https.request(webhookOptions, webhookRes => {
         let webhookResponse = '';
 
@@ -44,7 +47,7 @@ const server = http.createServer((req, res) => {
 
         webhookRes.on('end', () => {
           console.log('Webhook response:', webhookResponse);
-          res.statusCode = 302;
+          res.statusCode = 302; // Redirect status code
           res.setHeader('Location', `/order-confirmation?orderId=${orderId}`);
           res.end();
         });
@@ -56,7 +59,7 @@ const server = http.createServer((req, res) => {
         res.end('Error sending webhook');
       });
 
-      webhookReq.write(webhookData);
+      webhookReq.write(webhookData); // Write the webhook data to the request
       webhookReq.end();
     });
   } else if (req.method === 'GET' && req.url.startsWith('/order-confirmation')) {
