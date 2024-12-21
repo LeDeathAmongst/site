@@ -7,7 +7,7 @@ import { promises as fs } from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
-// Get __dirname equivalent in ES Module
+// Get __filename and __dirname equivalent in ES Module
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -63,45 +63,9 @@ const server = http.createServer((req, res) => {
         // Write the updated orders back to the file
         await fs.writeFile(ORDERS_FILE_PATH, JSON.stringify(orders, null, 2));
 
-        // Prepare the message to be sent to the Discord webhook
-        const webhookData = JSON.stringify({
-          content: `New Order Received!\n\n**Order ID:** ${orderId}\n**Name:** ${name}\n**Email:** ${email}\n**Description:** ${description}\n**Price:** $${price}\n**Payment Method:** ${paymentMethod}\n**Submitted At:** ${submittedAt}`
-        });
-
-        const webhookUrl = new URL(DISCORD_WEBHOOK_URL);
-        const webhookOptions = {
-          hostname: webhookUrl.hostname,
-          path: webhookUrl.pathname + webhookUrl.search,
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Content-Length': Buffer.byteLength(webhookData)
-          }
-        };
-
-        // Send the webhook message to Discord
-        const webhookReq = https.request(webhookOptions, webhookRes => {
-          let webhookResponse = '';
-
-          webhookRes.on('data', chunk => {
-            webhookResponse += chunk;
-          });
-
-          webhookRes.on('end', () => {
-            console.log('Webhook response:', webhookResponse);
-            res.writeHead(302, { 'Location': `/order-confirmation?orderId=${orderId}` });
-            res.end();
-          });
-        });
-
-        webhookReq.on('error', e => {
-          console.error('Error sending webhook:', e);
-          res.statusCode = 500;
-          res.end('Error sending webhook');
-        });
-
-        webhookReq.write(webhookData); // Write the webhook data to the request
-        webhookReq.end();
+        // Redirect to order confirmation page with orderId as query parameter
+        res.writeHead(302, { 'Location': `/order-confirmation?orderId=${orderId}` });
+        res.end();
       } catch (error) {
         console.error('Error processing order:', error);
         res.statusCode = 500;
@@ -173,6 +137,55 @@ const server = http.createServer((req, res) => {
       </body>
       </html>
     `);
+
+    // Send the webhook after displaying the confirmation page
+    (async () => {
+      try {
+        const data = await fs.readFile(ORDERS_FILE_PATH, 'utf-8');
+        const orders = JSON.parse(data);
+        const orderDetails = orders.find(order => order.orderId === orderId);
+
+        if (orderDetails) {
+          // Prepare the message to be sent to the Discord webhook
+          const webhookData = JSON.stringify({
+            content: `New Order Received!\n\n**Order ID:** ${orderDetails.orderId}\n**Name:** ${orderDetails.name}\n**Email:** ${orderDetails.email}\n**Description:** ${orderDetails.description}\n**Price:** $${orderDetails.price}\n**Payment Method:** ${orderDetails.paymentMethod}\n**Submitted At:** ${orderDetails.submittedAt}`
+          });
+
+          const webhookUrl = new URL(DISCORD_WEBHOOK_URL);
+          const webhookOptions = {
+            hostname: webhookUrl.hostname,
+            path: webhookUrl.pathname + webhookUrl.search,
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'Content-Length': Buffer.byteLength(webhookData)
+            }
+          };
+
+          // Send the webhook message to Discord
+          const webhookReq = https.request(webhookOptions, webhookRes => {
+            let webhookResponse = '';
+
+            webhookRes.on('data', chunk => {
+              webhookResponse += chunk;
+            });
+
+            webhookRes.on('end', () => {
+              console.log('Webhook response:', webhookResponse);
+            });
+          });
+
+          webhookReq.on('error', e => {
+            console.error('Error sending webhook:', e);
+          });
+
+          webhookReq.write(webhookData); // Write the webhook data to the request
+          webhookReq.end();
+        }
+      } catch (error) {
+        console.error('Error sending webhook:', error);
+      }
+    })();
   } else {
     res.statusCode = 404;
     res.end('Not Found');
