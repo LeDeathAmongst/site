@@ -1,40 +1,47 @@
 ---
-interface Order {
-  name: string;
-  email: string;
-  description: string;
-  price: number;
-  paymentMethod: string;
-  submittedAt: string;
-}
-
-const { order } = Astro.props as { order: Order };
+export const props = {
+  order: {
+    id: String,
+    name: String,
+    email: String,
+    description: String,
+    price: Number,
+    paymentMethod: String,
+    submittedAt: String,
+  },
+};
 ---
 
-<article class="order-card">
-  <h2>{order.name}</h2>
-  <p><strong>Email:</strong> {order.email}</p>
-  <p><strong>Description:</strong> {order.description}</p>
-  <p><strong>Price:</strong> ${order.price}</p>
-  <p><strong>Payment Method:</strong> {order.paymentMethod}</p>
-  <p><strong>Submitted At:</strong> {new Date(order.submittedAt).toLocaleString()}</p>
-</article>
+<div class="order-card">
+  <h2>Order ID: {props.order.id}</h2>
+  <p><strong>Name:</strong> {props.order.name}</p>
+  <p><strong>Email:</strong> {props.order.email}</p>
+  <p><strong>Description:</strong> {props.order.description}</p>
+  <p><strong>Price:</strong> ${props.order.price}</p>
+  <p><strong>Payment Method:</strong> {props.order.paymentMethod}</p>
+  <p><strong>Submitted At:</strong> {new Date(props.order.submittedAt).toLocaleString()}</p>
+</div>
 
 <style>
   .order-card {
-    border: 1px solid #ddd;
-    border-radius: 8px;
     padding: 1rem;
-    margin-bottom: 1rem;
-    background-color: #f9f9f9;
+    background-color: #1a1a1a; /* Match the site's theme */
+    color: white;
+    border: 1px solid white;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   }
 
   .order-card h2 {
-    margin: 0;
+    margin-top: 0;
     font-size: 1.5rem;
   }
 
   .order-card p {
     margin: 0.5rem 0;
+  }
+
+  .order-card p strong {
+    font-weight: bold;
   }
 </style>
