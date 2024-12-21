@@ -10,7 +10,7 @@ import { fileURLToPath } from 'url';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const PORT = 3000;
+const PORT = 3000; // Change this to your desired port
 const ORDERS_FILE_PATH = path.join(__dirname, 'orders.json');
 
 const server = http.createServer(async (req, res) => {
@@ -70,73 +70,11 @@ const server = http.createServer(async (req, res) => {
         res.end('Error processing order');
       }
     });
-  } else if (req.method === 'GET' && req.url === '/admin-orders') {
-    // Serve the admin orders page
-    try {
-      const data = await fs.readFile(ORDERS_FILE_PATH, 'utf-8');
-      const orders = JSON.parse(data);
-
-      res.statusCode = 200;
-      res.setHeader('Content-Type', 'text/html');
-      res.end(`
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="UTF-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <title>Admin Orders - Rosie</title>
-          <style>
-            .orders-container {
-              display: flex;
-              flex-wrap: wrap;
-              gap: 1rem;
-              padding: 2rem;
-            }
-            .order-card {
-              background: #1a1a1a;
-              color: #fff;
-              border-radius: 8px;
-              padding: 1rem;
-              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-              max-width: 300px;
-              flex: 1;
-            }
-            .order-card h2 {
-              font-size: 1.5rem;
-              margin-bottom: 0.5rem;
-            }
-            .order-card p {
-              font-size: 1rem;
-              margin-bottom: 0.5rem;
-            }
-          </style>
-        </head>
-        <body>
-          <div class="orders-container">
-            ${orders.map(order => `
-              <div class="order-card">
-                <h2>Order ID: ${order.orderId}</h2>
-                <p><strong>Name:</strong> ${order.name}</p>
-                <p><strong>Email:</strong> ${order.email}</p>
-                <p><strong>Description:</strong> ${order.description}</p>
-                <p><strong>Price:</strong> $${order.price}</p>
-                <p><strong>Payment Method:</strong> ${order.paymentMethod}</p>
-                <p><strong>Submitted At:</strong> ${order.submittedAt}</p>
-              </div>
-            `).join('')}
-          </div>
-        </body>
-        </html>
-      `);
-    } catch (error) {
-      console.error('Error reading orders file:', error);
-      res.statusCode = 500;
-      res.end('Error reading orders file');
-    }
   } else if (req.method === 'GET' && req.url.startsWith('/order-confirmation')) {
     const urlParts = new URL(req.url, `http://${req.headers.host}`);
     const orderId = urlParts.searchParams.get('orderId');
 
+    // Serve the order confirmation page
     res.statusCode = 200;
     res.setHeader('Content-Type', 'text/html');
     res.end(`
@@ -193,11 +131,75 @@ const server = http.createServer(async (req, res) => {
           <h1>Order Confirmation</h1>
           <p>Thank you for your order! Your order has been submitted successfully. We will process it soon.</p>
           <p class="order-number">Order Number: ${orderId}</p>
-          <a href="https://site.prismbot.icu" class="home-link">Back to Home</a>
+          <a href="/" class="home-link">Back to Home</a>
         </div>
       </body>
       </html>
     `);
+  } else if (req.method === 'GET' && req.url === '/admin-orders') {
+    // Serve the admin orders page
+    try {
+      const data = await fs.readFile(ORDERS_FILE_PATH, 'utf-8');
+      const orders = JSON.parse(data);
+
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/html');
+      res.end(`
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <title>Admin Orders - Rosie</title>
+          <style>
+            .orders-container {
+              display: flex;
+              flex-wrap: wrap;
+              gap: 1rem;
+              padding: 2rem;
+            }
+            .order-card {
+              background: #1a1a1a;
+              color: #fff;
+              border-radius: 8px;
+              padding: 1rem;
+              box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+              max-width: 300px;
+              flex: 1;
+            }
+            .order-card h2 {
+              font-size: 1.5rem;
+              margin-bottom: 0.5rem;
+            }
+            .order-card p {
+              font-size: 1rem;
+              margin-bottom: 0.5rem;
+            }
+          </style>
+        </head>
+        <body>
+          <h1>Admin Orders</h1>
+          <div class="orders-container">
+            ${orders.map(order => `
+              <div class="order-card">
+                <h2>Order ID: ${order.orderId}</h2>
+                <p><strong>Name:</strong> ${order.name}</p>
+                <p><strong>Email:</strong> ${order.email}</p>
+                <p><strong>Description:</strong> ${order.description}</p>
+                <p><strong>Price:</strong> $${order.price}</p>
+                <p><strong>Payment Method:</strong> ${order.paymentMethod}</p>
+                <p><strong>Submitted At:</strong> ${order.submittedAt}</p>
+              </div>
+            `).join('')}
+          </div>
+        </body>
+        </html>
+      `);
+    } catch (error) {
+      console.error('Error reading orders file:', error);
+      res.statusCode = 500;
+      res.end('Error reading orders file');
+    }
   } else {
     res.statusCode = 404;
     res.end('Not Found');
