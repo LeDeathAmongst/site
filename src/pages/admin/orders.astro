@@ -1,7 +1,7 @@
 ---
 import { getCollection } from "astro:content"; // Ensure this import is correct
-import Layout from "../layouts/Layout.astro";
-import OrderCard from "../components/OrderCard.astro";
+import Layout from "../../layouts/Layout.astro";
+import OrderCard from "../../components/OrderCard.astro";
 
 // Fetch orders
 const orders = await getCollection("orders");
