@@ -3,9 +3,12 @@ import https from 'https';
 import { v4 as uuidv4 } from 'uuid';
 import { URL } from 'url';
 import { parse } from 'querystring';
+import { promises as fs } from 'fs';
+import path from 'path';
 
 const PORT = 3000;
 const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1319827706887671919/SqeSEkI0L_Kqlk0mRgH5dZvKtXgkuaks0_B9r2-yJgTiEI4bkPEI-D98ZMBlarv5mt2t';
+const ORDERS_FILE_PATH = path.join(__dirname, 'orders.json');
 
 const server = http.createServer((req, res) => {
   console.log(`Received request: ${req.method} ${req.url}`);
@@ -19,13 +22,41 @@ const server = http.createServer((req, res) => {
     });
 
     // Once all data is received, process the order submission
-    req.on('end', () => {
+    req.on('end', async () => {
       try {
         const { name, email, description, price, paymentMethod } = parse(body);
         const orderId = uuidv4(); // Generate a unique order ID
         const submittedAt = new Date().toISOString(); // Record the submission time
 
         console.log(`Order received: ${orderId}`);
+
+        // Prepare the order details
+        const orderDetails = {
+          orderId,
+          name,
+          email,
+          description,
+          price,
+          paymentMethod,
+          submittedAt
+        };
+
+        // Read existing orders from the file
+        let orders = [];
+        try {
+          const data = await fs.readFile(ORDERS_FILE_PATH, 'utf-8');
+          orders = JSON.parse(data);
+        } catch (err) {
+          if (err.code !== 'ENOENT') {
+            throw err;
+          }
+        }
+
+        // Add the new order to the list
+        orders.push(orderDetails);
+
+        // Write the updated orders back to the file
+        await fs.writeFile(ORDERS_FILE_PATH, JSON.stringify(orders, null, 2));
 
         // Prepare the message to be sent to the Discord webhook
         const webhookData = JSON.stringify({
