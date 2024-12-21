@@ -6,16 +6,12 @@ import ArticleIndex from "../components/ArticleIndex.astro";
 const title = "Order Form - Rosie";
 const description = "Submit your order here.";
 const ogTitle = "Order Form - Rosie";
-const ogImage = "https://yourdomain.com/path/to/your/og-image.jpg"; // Replace with your actual image URL
-const url = "https://yourdomain.com/order"; // Replace with your actual URL
 ---
 
 <Layout
   title={title}
   description={description}
   ogTitle={ogTitle}
-  ogImage={ogImage}
-  url={url}
 >
   <ArticleIndex title="Order Form" navCurrent="/order">
     <Fragment slot="description">
