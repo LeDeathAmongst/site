@@ -16,7 +16,7 @@ const ORDERS_FILE_PATH = path.join(__dirname, 'orders.json');
 const server = http.createServer(async (req, res) => {
   console.log(`Received request: ${req.method} ${req.url}`);
   
-  if (req.method === 'POST' && req.url === '/submit-order') {
+  if (req.method === 'POST' && req.url === '/order-confirmation') {
     let body = '';
 
     // Accumulate the data chunks received in the request body
