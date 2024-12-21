@@ -1,70 +1,76 @@
 ---
-import { getCollection } from "astro:content";
-import OrderCard from "../components/OrderCard.astro";
-import ArticleIndex from "../components/ArticleIndex.astro";
 import Layout from "../layouts/Layout.astro";
 
-// Fetch orders from the content collection (you can replace this with your actual orders fetching logic)
-const orders = await getCollection("orders");
+// Define the properties for the SEO meta tags
+const title = "Order Form - Rosie";
+const description = "Submit your order here.";
+const ogTitle = "Order Form - Rosie";
+const ogImage = "https://yourdomain.com/path/to/your/og-image.jpg"; // Replace with your actual image URL
+const url = "https://yourdomain.com/order"; // Replace with your actual URL
 ---
 
 <Layout
-  title="Orders - Rosie"
-  ogTitle="Orders"
-  description="Submitted orders from customers."
+  title={title}
+  description={description}
+  ogTitle={ogTitle}
+  ogImage={ogImage}
+  url={url}
 >
-  <ArticleIndex title="Orders" navCurrent="/admin/orders">
-    <Fragment slot="description">
-      Here are the orders submitted by customers. You can view the details of each order below.
-    </Fragment>
+  <h1>Order Form</h1>
 
-    {
-      orders.map(order => (
-        <OrderCard order={order} />
-      ))
-    }
-  </ArticleIndex>
+  <form action="/submit-order" method="post" class="order-form">
+    <label for="name">Name:</label>
+    <input type="text" id="name" name="name" required />
+
+    <label for="email">Email:</label>
+    <input type="email" id="email" name="email" required />
+
+    <label for="description">Description:</label>
+    <textarea id="description" name="description" required></textarea>
+
+    <label for="price">Price:</label>
+    <input type="number" id="price" name="price" required />
+
+    <label for="payment-method">Method of Payment:</label>
+    <select id="payment-method" name="paymentMethod" required>
+      <option value="credit-card">Credit Card</option>
+      <option value="paypal">PayPal</option>
+      <option value="bank-transfer">Bank Transfer</option>
+    </select>
+
+    <button type="submit">Submit Order</button>
+  </form>
 </Layout>
 
 <style>
-  @property --bg1 {
-    syntax: "<color>";
-    initial-value: #101416;
-    inherits: false;
+  .order-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
   }
 
-  @property --bg2 {
-    syntax: "<color>";
-    initial-value: #101416;
-    inherits: false;
+  .order-form label {
+    font-weight: bold;
   }
 
-  .order {
-    @apply rounded-lg;
-    position: relative;
-    background: linear-gradient(to bottom right, var(--bg1), var(--bg2));
+  .order-form input,
+  .order-form textarea,
+  .order-form select {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+  }
+
+  .order-form button {
+    width: fit-content;
+    padding: 0.5rem 1rem;
+    background-color: #007bff;
     color: white;
-    transition:
-      --bg1 0.1s ease-out,
-      --bg2 0.1s ease-out;
+    border: none;
+    cursor: pointer;
+  }
 
-    &:hover {
-      --bg1: #f0f;
-      --bg2: #0ff;
-    }
-
-    &::before {
-      content: "";
-      display: block;
-      position: absolute;
-      inset: 1px;
-      background: #101416;
-      border-radius: inherit;
-      pointer-events: none;
-    }
-
-    & * {
-      z-index: 5;
-    }
+  .order-form button:hover {
+    background-color: #0056b3;
   }
 </style>
