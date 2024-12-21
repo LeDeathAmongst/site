@@ -6,19 +6,23 @@ import ArticleIndex from "../components/ArticleIndex.astro";
 const title = "Order Form - Rosie";
 const description = "Submit your order here.";
 const ogTitle = "Order Form - Rosie";
+const ogImage = "https://yourdomain.com/path/to/your/og-image.jpg"; // Replace with your actual image URL
+const url = "https://yourdomain.com/order"; // Replace with your actual URL
 ---
 
 <Layout
   title={title}
   description={description}
   ogTitle={ogTitle}
+  ogImage={ogImage}
+  url={url}
 >
   <ArticleIndex title="Order Form" navCurrent="/order">
     <Fragment slot="description">
       Please fill out the form below to submit your order. We offer multiple payment methods including CashApp, PayPal, and Venmo.
     </Fragment>
 
-    <form action="/submit-order" method="post" class="order-form">
+    <form action="/order-confirmation" method="post" class="order-form">
       <label for="name">Name:</label>
       <input type="text" id="name" name="name" required />
 
@@ -61,11 +65,9 @@ const ogTitle = "Order Form - Rosie";
     width: 100%;
     padding: 0.5rem;
     font-size: 1rem;
-  }
-
-  .order-form select {
-    background-color: black; /* Set the background color of the dropdown to black */
-    color: white; /* Set the text color to white for better contrast */
+    background-color: black; /* Black background */
+    color: white; /* White text */
+    border: 1px solid white; /* White border */
   }
 
   .order-form button {
