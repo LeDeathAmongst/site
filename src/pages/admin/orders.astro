@@ -1,18 +1,29 @@
 ---
-import Layout from "../../layouts/Layout.astro";
-import OrderCard from "../../components/OrderCard.astro";
-import { createSignal } from "solid-js";
+import Layout from "../layouts/Layout.astro";
+import OrderCard from "../components/OrderCard.astro";
+import { createSignal, onMount } from "solid-js";
 
+// Fetch orders (replace this with your actual orders fetching logic)
+const orders = await getCollection("orders");
+
+// Create signals for PIN and authentication status
 const [pin, setPin] = createSignal("");
 const [isAuthenticated, setIsAuthenticated] = createSignal(false);
-const [orders, setOrders] = createSignal([]); // Dummy orders for demonstration
 
+// Check authentication status on mount
+onMount(() => {
+  const storedAuth = localStorage.getItem("isAuthenticated");
+  if (storedAuth === "true") {
+    setIsAuthenticated(true);
+  }
+});
+
+// Handle PIN submission
 const handlePinSubmit = (event) => {
   event.preventDefault();
   if (pin() === "1104") {
     setIsAuthenticated(true);
-    // Fetch orders here
-    // setOrders(await getCollection("orders")); // Uncomment this and ensure the collection exists
+    localStorage.setItem("isAuthenticated", "true");
   } else {
     alert("Incorrect PIN");
   }
@@ -28,8 +39,8 @@ const handlePinSubmit = (event) => {
 
   {isAuthenticated() ? (
     <div>
-      {orders().length > 0 ? (
-        orders().map(order => (
+      {orders.length > 0 ? (
+        orders.map(order => (
           <OrderCard order={order} />
         ))
       ) : (
