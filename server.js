@@ -6,7 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 const querystring = require('querystring');
 
 const PORT = 3000;
-const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/YOUR_WEBHOOK_ID/YOUR_WEBHOOK_TOKEN'; // Replace with your actual webhook URL
+const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1319827706887671919/SqeSEkI0L_Kqlk0mRgH5dZvKtXgkuaks0_B9r2-yJgTiEI4bkPEI-D98ZMBlarv5mt2t'; // Replace with your actual webhook URL
 
 const server = http.createServer((req, res) => {
   if (req.method === 'POST' && req.url === '/submit-order') {
