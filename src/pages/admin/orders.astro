@@ -6,9 +6,11 @@ import { createSignal, onMount } from "solid-js";
 // Fetch orders (replace this with your actual orders fetching logic)
 const orders = await getCollection("orders");
 
-// Create signals for PIN and authentication status
+// Create signals for PIN, search, and authentication status
 const [pin, setPin] = createSignal("");
 const [isAuthenticated, setIsAuthenticated] = createSignal(false);
+const [searchQuery, setSearchQuery] = createSignal("");
+const [filteredOrders, setFilteredOrders] = createSignal(orders);
 
 // Check authentication status on mount
 onMount(() => {
@@ -28,6 +30,13 @@ const handlePinSubmit = (event) => {
     alert("Incorrect PIN");
   }
 };
+
+// Handle search input
+const handleSearch = (event) => {
+  setSearchQuery(event.target.value);
+  const query = event.target.value.toLowerCase();
+  setFilteredOrders(orders.filter(order => order.id.toLowerCase().includes(query)));
+};
 ---
 
 <Layout
@@ -39,8 +48,9 @@ const handlePinSubmit = (event) => {
 
   {isAuthenticated() ? (
     <div>
-      {orders.length > 0 ? (
-        orders.map(order => (
+      <input type="text" placeholder="Search by UUID" value={searchQuery()} onInput={handleSearch} class="search-bar" />
+      {filteredOrders().length > 0 ? (
+        filteredOrders().map(order => (
           <OrderCard order={order} />
         ))
       ) : (
@@ -88,5 +98,15 @@ const handlePinSubmit = (event) => {
 
   .pin-form button:hover {
     background-color: #0056b3;
+  }
+
+  .search-bar {
+    width: 100%;
+    padding: 0.5rem;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+    background-color: black; /* Black background */
+    color: white; /* White text */
+    border: 1px solid white; /* White border */
   }
 </style>
