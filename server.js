@@ -1,7 +1,8 @@
-const http = require('http');
-const https = require('https');
-const { v4: uuidv4 } = require('uuid');
-const querystring = require('querystring');
+import http from 'http';
+import https from 'https';  // Use 'import' instead of 'require'
+import { v4 as uuidv4 } from 'uuid';
+import { URL } from 'url';
+import { parse } from 'querystring';
 
 const PORT = 3000;
 const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1319827706887671919/SqeSEkI0L_Kqlk0mRgH5dZvKtXgkuaks0_B9r2-yJgTiEI4bkPEI-D98ZMBlarv5mt2t'; // Replace with your actual webhook URL
@@ -17,7 +18,7 @@ const server = http.createServer((req, res) => {
 
     // Once all data is received, process the order submission
     req.on('end', () => {
-      const { name, email, description, price, paymentMethod } = querystring.parse(body);
+      const { name, email, description, price, paymentMethod } = parse(body);
       const orderId = uuidv4(); // Generate a unique order ID
       const submittedAt = new Date().toISOString(); // Record the submission time
 
