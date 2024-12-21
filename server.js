@@ -1,11 +1,11 @@
 import http from 'http';
-import https from 'https';  // Use 'import' instead of 'require'
+import https from 'https';
 import { v4 as uuidv4 } from 'uuid';
 import { URL } from 'url';
 import { parse } from 'querystring';
 
 const PORT = 3000;
-const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1319827706887671919/SqeSEkI0L_Kqlk0mRgH5dZvKtXgkuaks0_B9r2-yJgTiEI4bkPEI-D98ZMBlarv5mt2t'; // Replace with your actual webhook URL
+const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1319827706887671919/SqeSEkI0L_Kqlk0mRgH5dZvKtXgkuaks0_B9r2-yJgTiEI4bkPEI-D98ZMBlarv5mt2t';
 
 const server = http.createServer((req, res) => {
   if (req.method === 'POST' && req.url === '/submit-order') {
